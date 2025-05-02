@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
 import HoverCard from './HoverCard';
 import ScrollReveal from './ScrollReveal';
+import TechAnimation from './TechAnimation';
 
 const Hero = () => {
   const heroRef = useRef<HTMLDivElement>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [scrollIndicatorVisible, setScrollIndicatorVisible] = useState(true);
   
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -23,8 +25,21 @@ const Hero = () => {
     
     window.addEventListener('mousemove', handleMouseMove);
     
+    // Hide scroll indicator when user scrolls down
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      if (scrollY > 100) {
+        setScrollIndicatorVisible(false);
+      } else {
+        setScrollIndicatorVisible(true);
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
   
@@ -105,41 +120,39 @@ const Hero = () => {
           </ScrollReveal>
           
           <ScrollReveal direction="right" delay={200}>
-            <div className="relative">
+            <div className="relative h-[500px]">
+              {/* Animated Tech Visualization */}
               <div className="absolute -inset-2 rounded-xl bg-gradient-to-r from-secondary/30 via-accent/20 to-secondary/30 pulse-gradient blur-md"></div>
-              <div className="relative bg-white rounded-xl overflow-hidden shadow-2xl">
-                <img 
-                  src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80" 
-                  alt="Digital Solutions" 
-                  className="w-full h-auto"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex items-end p-6">
-                  <div>
-                    <p className="text-white font-medium text-xl">Digital Transformation</p>
-                    <p className="text-white/80">Elevate your business with our solutions</p>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Floating elements */}
-              <div className="absolute -left-8 top-1/4 bg-white p-3 rounded-lg shadow-lg flex items-center space-x-2 animate-pulse">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <p className="text-xs font-medium">Live Projects: 24</p>
-              </div>
-              
-              <div className="absolute -right-5 bottom-1/4 bg-white p-3 rounded-lg shadow-lg animate-pulse">
-                <p className="text-xs font-medium">⭐ 4.9/5 Rating</p>
+              <div className="relative h-full rounded-xl overflow-hidden shadow-2xl">
+                <TechAnimation />
               </div>
             </div>
           </ScrollReveal>
         </div>
       </div>
       
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center animate-bounce">
-        <p className="text-xs text-foreground/60 mb-1">Scroll to explore</p>
-        <div className="w-5 h-10 border-2 border-foreground/30 rounded-full flex justify-center">
-          <div className="w-1 h-2 bg-foreground/60 rounded-full mt-2 animate-[pulse_2s_infinite]"></div>
+      {/* Enhanced Scroll indicator */}
+      <div 
+        className={`fixed bottom-8 left-1/2 transform -translate-x-1/2 z-20 transition-all duration-500 
+        ${scrollIndicatorVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
+      >
+        <div className="relative group cursor-pointer" onClick={() => window.scrollTo({top: window.innerHeight, behavior: 'smooth'})}>
+          {/* Animated rings */}
+          <div className="absolute -inset-4 rounded-full bg-gradient-to-r from-secondary to-accent opacity-75 
+                          group-hover:opacity-100 blur-sm group-hover:blur-md animate-pulse transition-all"></div>
+          
+          {/* Main scroll indicator */}
+          <div className="relative bg-white dark:bg-background rounded-full p-4 flex flex-col items-center justify-center
+                          shadow-lg transform group-hover:scale-110 transition-transform">
+            <p className="text-xs font-medium mb-1 text-foreground/80 group-hover:text-accent transition-colors">Scroll to explore</p>
+            <div className="w-6 h-10 border-2 border-foreground/30 group-hover:border-accent rounded-full flex justify-center mb-1 transition-colors">
+              <div className="w-1.5 h-2 bg-foreground/60 group-hover:bg-accent rounded-full mt-2 animate-[bounce_2s_infinite] transition-colors"></div>
+            </div>
+            <svg className="w-4 h-4 text-foreground/60 group-hover:text-accent animate-bounce transition-colors" 
+                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+            </svg>
+          </div>
         </div>
       </div>
       
