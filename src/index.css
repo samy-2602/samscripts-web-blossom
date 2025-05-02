@@ -164,4 +164,55 @@
       background-position: 0% 50%;
     }
   }
+  
+  /* New interactive animations */
+  .hover-card {
+    @apply relative overflow-hidden rounded-lg transition-all duration-300 bg-white;
+  }
+  
+  .hover-card::after {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-secondary/10 to-accent/10 opacity-0 transition-opacity duration-300;
+  }
+  
+  .hover-card:hover {
+    @apply shadow-xl -translate-y-1;
+  }
+  
+  .hover-card:hover::after {
+    @apply opacity-100;
+  }
+  
+  /* Interactive link animation */
+  .animated-link {
+    @apply relative inline-block;
+  }
+  
+  .animated-link::after {
+    content: '';
+    @apply absolute left-0 bottom-0 w-0 h-0.5 bg-accent transition-all duration-300;
+  }
+  
+  .animated-link:hover::after {
+    @apply w-full;
+  }
+  
+  /* Magnetic button effect */
+  .btn-magnetic {
+    @apply relative inline-block transition-transform duration-300 ease-out will-change-transform;
+  }
+  
+  /* Growing border animation */
+  .growing-border {
+    @apply relative inline-block;
+  }
+  
+  .growing-border::before {
+    content: '';
+    @apply absolute bottom-0 left-1/2 w-0 h-0.5 bg-accent -translate-x-1/2 transition-all duration-300;
+  }
+  
+  .growing-border:hover::before {
+    @apply w-full;
+  }
 }

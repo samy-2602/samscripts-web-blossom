@@ -1,17 +1,42 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import Services from "@/components/Services";
 import Expertise from "@/components/Expertise";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { ArrowRight, ChevronDown, Circle, MousePointer, Play } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [activeSection, setActiveSection] = useState("hero");
+  
   useEffect(() => {
     // Update document title
     document.title = "SamScripts - IT Services & Software Solutions";
+    
+    // Scroll position tracker for animations
+    const handleScroll = () => {
+      setScrollPosition(window.scrollY);
+      
+      // Update active section based on scroll position
+      const sections = ["hero", "expertise", "work", "about"];
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top <= 100 && rect.bottom >= 100) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+    };
+    
+    window.addEventListener("scroll", handleScroll);
     
     // Smooth scroll function
     const handleHashLinkClick = (e: MouseEvent) => {
@@ -37,103 +62,205 @@ const Index = () => {
     document.addEventListener("click", handleHashLinkClick);
 
     return () => {
+      window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("click", handleHashLinkClick);
     };
   }, []);
+
+  // Testimonial data
+  const testimonials = [
+    {
+      name: "Sarah Johnson",
+      role: "CTO, TechVision Inc",
+      quote: "SamScripts transformed our digital presence with their exceptional web development skills. The team's attention to detail and commitment to our vision exceeded our expectations.",
+      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80"
+    },
+    {
+      name: "Michael Chen",
+      role: "Product Manager, InnovateTech",
+      quote: "Working with SamScripts on our mobile application was a game-changer. Their technical expertise and creative solutions helped us launch ahead of schedule with outstanding results.",
+      image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80"
+    },
+    {
+      name: "Emily Rodriguez",
+      role: "Marketing Director, GrowthFirm",
+      quote: "The DevOps solutions provided by SamScripts dramatically improved our deployment cycles. Their team was responsive, knowledgeable, and a pleasure to work with throughout the project.",
+      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80"
+    }
+  ];
+
+  // Stats for animated counter section
+  const stats = [
+    { label: "Projects Completed", value: 200, suffix: "+" },
+    { label: "Happy Clients", value: 50, suffix: "+" },
+    { label: "Team Members", value: 15, suffix: "" },
+    { label: "Years Experience", value: 5, suffix: "+" }
+  ];
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <Hero />
-      <Services />
-      <Expertise />
       
-      {/* Featured Work/Portfolio Section */}
-      <section id="work" className="section-padding">
+      {/* Animated Scroll Indicator */}
+      <div className="flex justify-center">
+        <a 
+          href="#expertise" 
+          className="absolute bottom-10 animate-bounce flex flex-col items-center text-primary/60 hover:text-primary transition-colors"
+        >
+          <span className="text-sm mb-2">Explore</span>
+          <ChevronDown size={24} />
+        </a>
+      </div>
+      
+      {/* Interactive Process Section with Animated Steps */}
+      <section className="py-24 bg-gradient-to-b from-background to-foreground/5">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <ScrollReveal>
-              <h2 className="heading-lg mb-4">Our Featured Work</h2>
-              <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
-                Explore our portfolio of successful projects across different industries.
-              </p>
-            </ScrollReveal>
-          </div>
+          <ScrollReveal>
+            <h2 className="heading-lg text-center mb-8">Our Process</h2>
+            <p className="text-center text-foreground/70 max-w-2xl mx-auto mb-16">
+              We follow a structured approach to deliver exceptional results for every project
+            </p>
+          </ScrollReveal>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3].map((item) => (
-              <ScrollReveal key={item} delay={(item - 1) * 100}>
-                <div className="rounded-lg overflow-hidden bg-white shadow-lg card-hover">
-                  <div className="h-60 bg-gradient-to-r from-secondary/20 to-accent/20 flex items-center justify-center">
-                    <span className="text-2xl font-medium text-foreground/40">Project Image</span>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold mb-2">Project Title {item}</h3>
-                    <p className="text-foreground/70 mb-4">
-                      A brief description of the project, highlighting the key features and technologies used.
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="px-3 py-1 bg-secondary/10 text-secondary text-sm rounded-full">React</span>
-                      <span className="px-3 py-1 bg-accent/10 text-accent text-sm rounded-full">Node.js</span>
-                      <span className="px-3 py-1 bg-foreground/10 text-foreground text-sm rounded-full">AWS</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+            {[
+              { 
+                step: 1, 
+                title: "Discovery", 
+                description: "We start by understanding your business goals and requirements",
+                icon: Circle 
+              },
+              { 
+                step: 2, 
+                title: "Design & Develop", 
+                description: "Our experts craft solutions tailored to your unique needs",
+                icon: Play
+              },
+              { 
+                step: 3, 
+                title: "Deliver & Support", 
+                description: "We launch your project and provide ongoing maintenance",
+                icon: ArrowRight 
+              }
+            ].map((item, i) => (
+              <ScrollReveal key={i} delay={i * 150} direction={i % 2 === 0 ? "left" : "right"}>
+                <div className="p-8 rounded-lg bg-white shadow-lg hover-card relative overflow-hidden group">
+                  <div className="absolute -right-4 -bottom-4 w-32 h-32 bg-accent/5 rounded-full transition-transform group-hover:scale-150 duration-500"></div>
+                  <div className="relative z-10">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-4">
+                      <item.icon size={20} />
+                    </div>
+                    <h3 className="text-2xl font-bold mb-2 flex items-center">
+                      <span className="text-4xl text-accent/50 mr-2">{item.step}.</span>
+                      {item.title}
+                    </h3>
+                    <p className="text-foreground/70">{item.description}</p>
+                    <div className="mt-6 transform translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                      <a href="#" className="text-accent flex items-center font-medium">
+                        Learn more <ArrowRight size={16} className="ml-1 group-hover:ml-2 transition-all" />
+                      </a>
                     </div>
                   </div>
                 </div>
               </ScrollReveal>
             ))}
           </div>
-          
-          <div className="text-center mt-12">
-            <ScrollReveal>
-              <button className="btn-outline">
-                View All Projects
-              </button>
-            </ScrollReveal>
+        </div>
+      </section>
+      
+      {/* Animated Stats Section */}
+      <section className="py-16 bg-foreground/5">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, i) => (
+              <ScrollReveal key={i} delay={i * 100}>
+                <div className="text-center p-6 hover-scale">
+                  <div className="text-4xl md:text-5xl font-bold gradient-text mb-2">
+                    {stat.value}{stat.suffix}
+                  </div>
+                  <p className="text-foreground/70">{stat.label}</p>
+                </div>
+              </ScrollReveal>
+            ))}
           </div>
         </div>
       </section>
       
-      {/* About Section */}
-      <section id="about" className="section-padding bg-foreground/5">
+      <Expertise />
+      
+      {/* Interactive Testimonial Carousel */}
+      <section className="py-24 bg-foreground/5">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <ScrollReveal>
-              <div className="h-96 rounded-lg bg-gradient-to-r from-secondary/30 to-accent/30 flex items-center justify-center">
-                <span className="text-2xl font-medium text-foreground/40">Company Image</span>
-              </div>
-            </ScrollReveal>
-            
-            <ScrollReveal>
-              <h2 className="heading-lg mb-6">About SamScripts</h2>
-              <p className="text-lg mb-6 text-foreground/70">
-                Founded in 2020, SamScripts has quickly established itself as a trusted partner for businesses seeking high-quality IT services and software solutions. We bring together a talented team of developers, designers, and strategists to help our clients succeed in today's digital landscape.
-              </p>
-              <p className="text-lg mb-8 text-foreground/70">
-                Our mission is to transform your ideas into digital excellence through innovative technologies, superior craftsmanship, and a deep understanding of your business goals.
-              </p>
-              
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
-                <div>
-                  <div className="text-3xl font-bold gradient-text mb-2">100+</div>
-                  <p className="text-sm text-foreground/70">Projects Completed</p>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold gradient-text mb-2">50+</div>
-                  <p className="text-sm text-foreground/70">Happy Clients</p>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold gradient-text mb-2">10+</div>
-                  <p className="text-sm text-foreground/70">Team Members</p>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold gradient-text mb-2">5</div>
-                  <p className="text-sm text-foreground/70">Years Experience</p>
-                </div>
-              </div>
-            </ScrollReveal>
-          </div>
+          <ScrollReveal>
+            <h2 className="heading-lg text-center mb-6">What Our Clients Say</h2>
+            <p className="text-center text-foreground/70 max-w-2xl mx-auto mb-16">
+              Don't just take our word for it — hear what our clients have to say about working with us
+            </p>
+          </ScrollReveal>
+          
+          <Carousel className="max-w-4xl mx-auto">
+            <CarouselContent>
+              {testimonials.map((testimonial, index) => (
+                <CarouselItem key={index}>
+                  <div className="p-8 bg-white rounded-xl shadow-lg flex flex-col md:flex-row gap-8 items-center">
+                    <div className="w-24 h-24 rounded-full overflow-hidden flex-shrink-0">
+                      <img 
+                        src={testimonial.image} 
+                        alt={testimonial.name} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-lg italic mb-4">"{testimonial.quote}"</p>
+                      <div className="font-medium">{testimonial.name}</div>
+                      <div className="text-sm text-foreground/70">{testimonial.role}</div>
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div className="flex justify-center gap-4 mt-6">
+              <CarouselPrevious className="relative inset-auto" />
+              <CarouselNext className="relative inset-auto" />
+            </div>
+          </Carousel>
         </div>
       </section>
+      
+      {/* Interactive CTA Section */}
+      <section className="py-24 bg-gradient-to-r from-primary/90 to-accent/90 text-white">
+        <div className="container mx-auto px-4">
+          <ScrollReveal>
+            <div className="text-center max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Digital Presence?</h2>
+              <p className="text-lg mb-8 text-white/80">
+                Let's discuss how we can help you achieve your business goals with our expertise in web, mobile, and DevOps solutions.
+              </p>
+              <div className="group relative inline-block">
+                <Button 
+                  className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-6 h-auto group-hover:translate-y-[-2px] transition-all duration-300"
+                  size="lg"
+                >
+                  <span className="flex items-center">
+                    Get Started 
+                    <ArrowRight className="ml-2 group-hover:ml-3 transition-all" />
+                  </span>
+                </Button>
+                <div className="absolute -inset-1 rounded-lg border border-white/20 -z-10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+      
+      {/* Floating Interactive Element */}
+      <div 
+        className="fixed bottom-8 right-8 w-12 h-12 bg-accent text-white rounded-full flex items-center justify-center hover-float cursor-pointer shadow-lg z-50"
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      >
+        <MousePointer size={20} />
+      </div>
       
       <Contact />
       <Footer />
