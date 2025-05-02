@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -15,7 +14,7 @@ const Services = () => {
     const cards = document.querySelectorAll('.tilt-card');
     
     cards.forEach(card => {
-      card.addEventListener('mousemove', (e) => {
+      card.addEventListener('mousemove', (e: MouseEvent) => {
         const rect = (card as HTMLElement).getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
@@ -216,34 +215,38 @@ const Services = () => {
                 }
               ].map((step, index) => (
                 <div key={index} className="flex flex-col md:flex-row items-center">
-                  <ScrollReveal direction={index % 2 === 0 ? 'left' : 'right'} className="w-full md:w-1/2 md:pr-16 md:text-right mb-8 md:mb-0">
-                    {index % 2 === 0 ? (
-                      <>
-                        <h3 className="text-2xl font-semibold mb-4">{step.title}</h3>
-                        <p className="text-foreground/70">{step.description}</p>
-                      </>
-                    ) : (
-                      <div className="w-16 h-16 rounded-full bg-secondary text-white flex items-center justify-center text-2xl font-bold">
-                        {index + 1}
-                      </div>
-                    )}
-                  </ScrollReveal>
+                  <div className="w-full md:w-1/2 md:pr-16 md:text-right mb-8 md:mb-0">
+                    <ScrollReveal direction={index % 2 === 0 ? 'left' : 'right'}>
+                      {index % 2 === 0 ? (
+                        <>
+                          <h3 className="text-2xl font-semibold mb-4">{step.title}</h3>
+                          <p className="text-foreground/70">{step.description}</p>
+                        </>
+                      ) : (
+                        <div className="w-16 h-16 rounded-full bg-secondary text-white flex items-center justify-center text-2xl font-bold">
+                          {index + 1}
+                        </div>
+                      )}
+                    </ScrollReveal>
+                  </div>
                   
                   {/* Timeline dot - visible only on desktop */}
                   <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 w-6 h-6 rounded-full bg-white border-4 border-secondary"></div>
                   
-                  <ScrollReveal direction={index % 2 === 0 ? 'right' : 'left'} className="w-full md:w-1/2 md:pl-16">
-                    {index % 2 === 0 ? (
-                      <div className="w-16 h-16 rounded-full bg-secondary text-white flex items-center justify-center text-2xl font-bold">
-                        {index + 1}
-                      </div>
-                    ) : (
-                      <>
-                        <h3 className="text-2xl font-semibold mb-4">{step.title}</h3>
-                        <p className="text-foreground/70">{step.description}</p>
-                      </>
-                    )}
-                  </ScrollReveal>
+                  <div className="w-full md:w-1/2 md:pl-16">
+                    <ScrollReveal direction={index % 2 === 0 ? 'right' : 'left'}>
+                      {index % 2 === 0 ? (
+                        <div className="w-16 h-16 rounded-full bg-secondary text-white flex items-center justify-center text-2xl font-bold">
+                          {index + 1}
+                        </div>
+                      ) : (
+                        <>
+                          <h3 className="text-2xl font-semibold mb-4">{step.title}</h3>
+                          <p className="text-foreground/70">{step.description}</p>
+                        </>
+                      )}
+                    </ScrollReveal>
+                  </div>
                 </div>
               ))}
             </div>

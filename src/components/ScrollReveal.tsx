@@ -8,6 +8,7 @@ type ScrollRevealProps = {
   duration?: number;
   distance?: number;
   once?: boolean;
+  className?: string; // Added className prop
 };
 
 const ScrollReveal = ({ 
@@ -16,7 +17,8 @@ const ScrollReveal = ({
   direction = 'up', 
   duration = 600, 
   distance = 20,
-  once = true
+  once = true,
+  className = '' // Default to empty string
 }: ScrollRevealProps) => {
   const elementRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -66,7 +68,7 @@ const ScrollReveal = ({
   return (
     <div 
       ref={elementRef} 
-      className="animate-on-scroll"
+      className={`animate-on-scroll ${className}`}
       style={{
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? 'translate(0)' : getTransformValue(),
