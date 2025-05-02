@@ -11,6 +11,8 @@ type ScrollRevealProps = {
   className?: string;
   scale?: boolean;
   rotate?: boolean;
+  threshold?: number;
+  cascade?: boolean;
 };
 
 const ScrollReveal = ({ 
@@ -22,7 +24,9 @@ const ScrollReveal = ({
   once = true,
   className = '',
   scale = false,
-  rotate = false
+  rotate = false,
+  threshold = 0.1,
+  cascade = false
 }: ScrollRevealProps) => {
   const elementRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -44,7 +48,7 @@ const ScrollReveal = ({
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold }
     );
     
     if (elementRef.current) {
@@ -56,7 +60,7 @@ const ScrollReveal = ({
         observer.unobserve(elementRef.current);
       }
     };
-  }, [delay, once]);
+  }, [delay, once, threshold]);
 
   // Define transform based on direction
   const getTransformValue = () => {
@@ -83,6 +87,27 @@ const ScrollReveal = ({
     
     return transform;
   };
+
+  // If cascade effect is enabled, add staggered delay to child elements
+  if (cascade && isVisible) {
+    return (
+      <div ref={elementRef} className={`cascade-container ${className}`}>
+        {React.Children.map(children, (child, index) => (
+          <div
+            style={{
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? 'translate(0) scale(1) rotate(0)' : getTransformValue(),
+              transition: `opacity ${duration}ms ease-out, transform ${duration}ms ease-out`,
+              transitionDelay: `${delay + (index * 100)}ms`,
+            }}
+            className="cascade-item"
+          >
+            {child}
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div 
