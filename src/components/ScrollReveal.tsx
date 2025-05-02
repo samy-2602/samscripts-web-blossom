@@ -1,125 +1,87 @@
 
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useInView } from 'react-intersection-observer';
 
-type ScrollRevealProps = {
+interface ScrollRevealProps {
   children: React.ReactNode;
   delay?: number;
-  direction?: 'up' | 'down' | 'left' | 'right';
   duration?: number;
-  distance?: number;
-  once?: boolean;
-  className?: string;
-  scale?: boolean;
-  rotate?: boolean;
   threshold?: number;
+  direction?: 'up' | 'down' | 'left' | 'right' | 'none';
   cascade?: boolean;
-};
+  distance?: number;
+  className?: string;
+}
 
-const ScrollReveal = ({ 
-  children, 
-  delay = 0, 
-  direction = 'up', 
-  duration = 600, 
-  distance = 20,
-  once = true,
-  className = '',
-  scale = false,
-  rotate = false,
+const ScrollReveal: React.FC<ScrollRevealProps> = ({
+  children,
+  delay = 0,
+  duration = 800,
   threshold = 0.1,
-  cascade = false
-}: ScrollRevealProps) => {
-  const elementRef = useRef<HTMLDivElement>(null);
+  direction = 'up',
+  cascade = true,
+  distance = 50,
+  className = '',
+}) => {
   const [isVisible, setIsVisible] = useState(false);
+  const { ref, inView } = useInView({
+    threshold,
+    triggerOnce: true,
+  });
+  
+  const childrenArray = React.Children.toArray(children);
   
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setTimeout(() => {
-              setIsVisible(true);
-            }, delay);
-            
-            if (once) {
-              observer.unobserve(entry.target);
-            }
-          } else if (!once) {
-            setIsVisible(false);
-          }
-        });
-      },
-      { threshold }
-    );
-    
-    if (elementRef.current) {
-      observer.observe(elementRef.current);
+    if (inView) {
+      setIsVisible(true);
     }
+  }, [inView]);
+  
+  // Calculate transform values based on direction
+  const getTransform = (visible: boolean) => {
+    if (visible) return 'translate3d(0, 0, 0)';
     
-    return () => {
-      if (elementRef.current) {
-        observer.unobserve(elementRef.current);
-      }
-    };
-  }, [delay, once, threshold]);
-
-  // Define transform based on direction
-  const getTransformValue = () => {
-    let transform = '';
-    
-    // Direction based transform
     switch (direction) {
-      case 'up': transform += `translateY(${distance}px) `; break;
-      case 'down': transform += `translateY(-${distance}px) `; break;
-      case 'left': transform += `translateX(${distance}px) `; break;
-      case 'right': transform += `translateX(-${distance}px) `; break;
-      default: transform += `translateY(${distance}px) `;
+      case 'up': return `translate3d(0, ${distance}px, 0)`;
+      case 'down': return `translate3d(0, -${distance}px, 0)`;
+      case 'left': return `translate3d(${distance}px, 0, 0)`;
+      case 'right': return `translate3d(-${distance}px, 0, 0)`;
+      default: return 'translate3d(0, 0, 0)';
     }
-    
-    // Add scale if enabled
-    if (scale) {
-      transform += 'scale(0.95) ';
-    }
-    
-    // Add rotation if enabled
-    if (rotate) {
-      transform += 'rotate(5deg) ';
-    }
-    
-    return transform;
   };
-
-  // If cascade effect is enabled, add staggered delay to child elements
-  if (cascade && isVisible) {
+  
+  // If not cascading, reveal all children at once
+  if (!cascade) {
     return (
-      <div ref={elementRef} className={`cascade-container ${className}`}>
-        {React.Children.map(children, (child, index) => (
-          <div
-            style={{
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translate(0) scale(1) rotate(0)' : getTransformValue(),
-              transition: `opacity ${duration}ms ease-out, transform ${duration}ms ease-out`,
-              transitionDelay: `${delay + (index * 100)}ms`,
-            }}
-            className="cascade-item"
-          >
-            {child}
-          </div>
-        ))}
+      <div 
+        ref={ref}
+        className={`scroll-reveal-container ${className}`}
+        style={{
+          opacity: isVisible ? 1 : 0,
+          transform: getTransform(isVisible),
+          transition: `opacity ${duration}ms ease-out ${delay}ms, transform ${duration}ms ease-out ${delay}ms`,
+        }}
+      >
+        {children}
       </div>
     );
   }
-
+  
+  // If cascading, reveal each child with increasing delay
   return (
-    <div 
-      ref={elementRef} 
-      className={`animate-on-scroll ${className}`}
-      style={{
-        opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translate(0) scale(1) rotate(0)' : getTransformValue(),
-        transition: `opacity ${duration}ms ease-out, transform ${duration}ms ease-out`,
-      }}
-    >
-      {children}
+    <div ref={ref} className={`scroll-reveal-container ${className}`}>
+      {childrenArray.map((child, i) => (
+        <div
+          key={i}
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transform: getTransform(isVisible),
+            transition: `opacity ${duration}ms ease-out ${delay + i * 100}ms, transform ${duration}ms ease-out ${delay + i * 100}ms`,
+          }}
+        >
+          {child}
+        </div>
+      ))}
     </div>
   );
 };
